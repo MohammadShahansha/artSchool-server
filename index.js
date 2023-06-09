@@ -30,6 +30,7 @@ async function run() {
 
     const classCollection = client.db('artcraft').collection('classes');
     const selectedClassCollection = client.db('artcraft').collection('selectedClass');
+    const instructorCollection = client.db('artcraft').collection('instructor');
     
 
     //class related api-----------------------------------------
@@ -45,11 +46,33 @@ async function run() {
       res.send(result);
     })
 
+    // instructor Related api----------------------------------------------------------------
+    app.get('/allinstructor', async(req, res) => {
+      const result = await instructorCollection.find().toArray();
+      const sortResult = result.sort((a,b)=>parseInt(b.students)-parseInt(a.students))
+      res.send(sortResult)
+    })
+    app.get('/instructor', async(req, res) => {
+      const result = await instructorCollection.find().toArray();
+      res.send(result);
+    })
+
 
     //selected Related API---------------------------------------------
     app.post('/selectedclass', async(req, res) => {
       const item = req.body;
       const result = await selectedClassCollection.insertOne(item)
+      res.send(result);
+    })
+
+    app.get('/selectedclass', async(req, res)=> {
+      const email = req.query.email;
+      // console.log(email)
+      if(!email){
+        return res.send([])
+      }
+      const query = {email: email};
+      const result = await selectedClassCollection.find(query).toArray();
       res.send(result);
     })
 
