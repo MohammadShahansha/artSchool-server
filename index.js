@@ -29,15 +29,29 @@ async function run() {
     await client.connect();
 
     const classCollection = client.db('artcraft').collection('classes');
+    const selectedClassCollection = client.db('artcraft').collection('selectedClass');
     
 
     //class related api-----------------------------------------
     app.get('/classes', async(req, res) => {
+      // const result = await classCollection.find().toArray();
+      // res.send(result);
+      const result = await classCollection.find().toArray();
+      const sortResult = result.sort((a,b)=>parseInt(b.students)-parseInt(a.students))
+      res.send(sortResult)
+    })
+    app.get('/allclasses', async(req, res) => {
       const result = await classCollection.find().toArray();
       res.send(result);
     })
 
 
+    //selected Related API---------------------------------------------
+    app.post('/selectedclass', async(req, res) => {
+      const item = req.body;
+      const result = await selectedClassCollection.insertOne(item)
+      res.send(result);
+    })
 
 
     // Send a ping to confirm a successful connection
