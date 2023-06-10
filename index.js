@@ -51,6 +51,8 @@ async function run() {
     const userCollection = client.db('artcraft').collection('users');
     const selectedClassCollection = client.db('artcraft').collection('selectedClass');
     const instructorCollection = client.db('artcraft').collection('instructor');
+    const addedClassCollection = client.db('artcraft').collection('addedClass');
+
 
     app.post('/jwt', (req, res) => {
       const user = req.body;
@@ -174,6 +176,12 @@ async function run() {
       res.send(result)
     })
 
+    //*****************************added class related api*********************************
+    app.post('/addedclass', async (req, res) => {
+      const item = req.body;
+      const result = await addedClassCollection.insertOne(item)
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
