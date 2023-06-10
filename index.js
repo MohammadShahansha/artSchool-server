@@ -182,6 +182,10 @@ async function run() {
       const result = await addedClassCollection.insertOne(item)
       res.send(result);
     })
+    app.get('/addedclass', async (req, res) => {
+      const result = await addedClassCollection.find().toArray();
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
