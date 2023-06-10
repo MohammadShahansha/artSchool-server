@@ -106,6 +106,16 @@ async function run() {
       const result = await userCollection.updateOne(filter, updateDoc);
       res.send(result)
     })
+    app.get('/users/instructor/:email', async(req, res) => {
+      const email = req.params.email;
+      const query = {email: email}
+      const user = await userCollection.findOne(query)
+      const result = {instructor: user?.role === 'instructor'}
+      res.send(result)
+    })
+
+
+
 
 
     //class related api-----------------------------------------
