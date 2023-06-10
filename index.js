@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
 
 //middleware
@@ -33,6 +34,12 @@ async function run() {
     const selectedClassCollection = client.db('artcraft').collection('selectedClass');
     const instructorCollection = client.db('artcraft').collection('instructor');
 
+    app.post('/jwt', (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.SECRET_TOKEN, {expiresIn: '24h'})
+      res.send({token})
+    })
+
     //user related API----------------------------------------------------
     app.post('/users', async(req, res) => {
       const user = req.body;
@@ -49,13 +56,26 @@ async function run() {
       const result = await userCollection.find().toArray();
       res.send(result)
     })
-
+//--------------------------------API for creating a admin-------------------------------------------------
     app.patch('/users/admin/:id', async(req, res) => {
       const id = req.params.id;
       const filter = {_id: new ObjectId(id)};
       const updateDoc = {
         $set: {
           role: 'admin'
+        },
+      }
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send(result)
+    })
+
+    //---------------------------api for creating an instructor--------------------------
+    app.patch('/users/instructor/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updateDoc = {
+        $set: {
+          role: 'instructor'
         },
       }
       const result = await userCollection.updateOne(filter, updateDoc);
