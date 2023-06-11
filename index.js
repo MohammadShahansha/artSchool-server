@@ -3,6 +3,7 @@ const app = express();
 require('dotenv').config();
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.PAYMENT_SK)
 const port = process.env.PORT || 5000;
 
 //middleware
@@ -132,6 +133,12 @@ async function run() {
       const result = await classCollection.find().toArray();
       res.send(result);
     })
+    app.post('/classes', async (req, res) => {
+      const item = req.body;
+      const result = await classCollection.insertOne(item)
+      res.send(result);
+    })
+
 
     // instructor Related api----------------------------------------------------------------
     app.get('/allinstructor', async (req, res) => {
@@ -141,6 +148,11 @@ async function run() {
     })
     app.get('/instructor', async (req, res) => {
       const result = await instructorCollection.find().toArray();
+      res.send(result);
+    })
+    app.post('/instructor', async (req, res) => {
+      const item = req.body;
+      const result = await instructorCollection.insertOne(item)
       res.send(result);
     })
 
@@ -185,6 +197,20 @@ async function run() {
     app.get('/addedclass', async (req, res) => {
       const result = await addedClassCollection.find().toArray();
       res.send(result);
+    })
+
+    //***********************Payment related api********************** */
+    app.post('/create-payment-intent', async (req, res) => {
+      const {price} = req.body;
+      const amount = price*100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ['card']
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret
+      })
     })
 
     // Send a ping to confirm a successful connection
