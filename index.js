@@ -199,9 +199,24 @@ async function run() {
       res.send(result);
     })
 
+    app.patch('/added/approve/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updateDoc = {
+        $set: {
+          status: 'approve'
+        },
+      }
+      const result = await addedClassCollection.updateOne(filter, updateDoc);
+      res.send(result)
+    })
+
     //***********************Payment related api********************** */
     app.post('/create-payment-intent', async (req, res) => {
-      const {price} = req.body;
+      let {price} = req.body;
+      // price=JSON.parse(price)
+      // let body=JSON.parse(req.body);
+      // console.log(req.body)
       const amount = price*100;
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount,
