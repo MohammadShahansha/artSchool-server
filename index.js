@@ -211,6 +211,19 @@ async function run() {
       res.send(result)
     })
 
+    app.patch('/added/deny/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updateDoc = {
+        $set: {
+          status: 'deny',
+          feadback: 'You need to learn more'
+        },
+      }
+      const result = await addedClassCollection.updateOne(filter, updateDoc);
+      res.send(result)
+    })
+
     //***********************Payment related api********************** */
     app.post('/create-payment-intent', async (req, res) => {
       let {price} = req.body;
